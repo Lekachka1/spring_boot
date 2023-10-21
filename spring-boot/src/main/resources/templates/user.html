@@ -76,6 +76,21 @@
       border-radius: 10px;
       box-shadow: 0 2px 5px rgba(0,0,0,0.1);
     }
+
+    .action-btn {
+      border: none;
+      cursor: pointer;
+      font-size: 16px;
+      background-color: transparent;
+    }
+
+    .action-btn.edit-btn {
+      color: #1a73e8;
+    }
+
+    .action-btn.delete-btn {
+      color: #ea4335;
+    }
   </style>
 </head>
 
@@ -116,9 +131,13 @@
       <td th:text="${user.getLastName()}"></td>
       <td th:text="${user.getEmail()}"></td>
       <td>
-        <a type="button" th:href="@{/users/{id}/edit(id=${user.getId()})}" class="btn btn-light" th:class="${rowStat.count % 2 == 0 ? 'table-light' : ''}">Изменить</a>
-        <form th:method="DELETE" th:action="@{/users/delete(id=${user.getId()})}">
-          <input type="submit" value="Delete"/>
+        <form th:method="GET" th:action="@{${user.getId()}+'/edit'}" th:object="${user}">
+          <button class="action-btn edit-btn" type="submit">Изменить</button>
+        </form>
+        <form th:method="POST" th:action="@{/delete}" th:object="${user}">
+          <input type="hidden" th:name="id" th:value="${user.getId()}"/>
+          <input type="hidden" name="_method" value="DELETE" />
+          <button class="action-btn delete-btn" type="submit">Удалить</button>
         </form>
       </td>
     </tr>

@@ -13,34 +13,35 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import javax.validation.Valid;
 
 @Controller
-@RequestMapping({"/", "/users"})
+@RequestMapping("/")
 public class UserController {
 
     private final UserService userService;
+
 
     public UserController(UserService userService) {
         this.userService = userService;
     }
 
-    @GetMapping({"", "/", "us"})
+    @GetMapping( "/")
     public String showAllUsers(Model model) {
         model.addAttribute("users", userService.getAllUsers());
-        return "us";
+        return "user";
     }
 
-    @GetMapping(value = "/new")
+    @GetMapping("/new")
     public String addUserForm(@ModelAttribute("user") User user) {
         return "form";
     }
 
-    @PostMapping()
+    @PostMapping("/")
     public String addUser(@ModelAttribute("user") @Valid User user, BindingResult bindingResult,
                           RedirectAttributes attributes) {
         if (bindingResult.hasErrors()) {
             return "form";
         }
         userService.addUser(user);
-        return "redirect:/users";
+        return "redirect:/";
     }
 
     @GetMapping("/{id}/edit")
@@ -55,7 +56,7 @@ public class UserController {
             return "edit";
         }
         userService.editUser(user);
-        return "redirect:/users";
+        return "redirect:/";
     }
 
     @DeleteMapping("/delete")
@@ -65,6 +66,6 @@ public class UserController {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User with ID " + id + " not found");
         }
         userService.deleteUser(id);
-        return "redirect:/users";
+        return "redirect:/";
     }
 }
