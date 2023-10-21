@@ -33,33 +33,20 @@ public class UserController {
         return "form";
     }
 
-    @GetMapping("/{id}/edit")
-    public String editUser(Model model, @PathVariable("id") int id) {
-        model.addAttribute("user", userService.readUser(id));
-        return "edit";
-    }
-
     @PostMapping()
-    public String saveUser(@ModelAttribute("user") @Valid User user, BindingResult bindingResult,
-                           RedirectAttributes attributes) {
+    public String addUser(@ModelAttribute("user") @Valid User user, BindingResult bindingResult,
+                          RedirectAttributes attributes) {
         if (bindingResult.hasErrors()) {
             return "form";
         }
-
-        if (user.getId() != 0) {
-            User existingUser = userService.readUser(user.getId());
-            if (existingUser != null) {
-                userService.updateUser(user);
-            } else {
-                userService.saveUser(user);
-            }
-        } else {
-            userService.saveUser(user);
-        }
-
-        attributes.addFlashAttribute("flashMessage",
-                "Пользователь " + user.getFirstName() + " создан");
+        userService.addUser(user);
         return "redirect:/users";
+    }
+
+    @GetMapping("/{id}/edit")
+    public String editUser(Model model, @PathVariable("id") int id) {
+        model.addAttribute("user", userService.getUser(id));
+        return "edit";
     }
 
     @PatchMapping("/{id}")
@@ -67,20 +54,17 @@ public class UserController {
         if (bindingResult.hasErrors()) {
             return "edit";
         }
-        userService.updateUser(user);
-        return "redirect:/";
+        userService.editUser(user);
+        return "redirect:/users";
     }
-
 
     @DeleteMapping("/delete")
     public String deleteUser(@RequestParam("id") int id) {
-        User user = userService.readUser(id);
+        User user = userService.getUser(id);
         if (user == null) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Пользователь с ID " + id + " не найден");
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User with ID " + id + " not found");
         }
-
         userService.deleteUser(id);
-
         return "redirect:/users";
     }
 }
